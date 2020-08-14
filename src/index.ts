@@ -5,10 +5,12 @@ import { initControls } from "./controls";
 const state = {
     cameraX: 0,
     cameraY: 0,
-    cameraZ: 0,
+    cameraZ: 5,
     cameraPhi: 0, // angle with z axis around y axis (0: in z-direction, pi: -z direction)
     cameraTheta: 0, // angle with x,y plane
     movementSpeed: 0.04,
+
+    someAngle: 0,
 };
 export type State = typeof state;
 //
@@ -83,7 +85,7 @@ const setup = (gl: WebGL2RenderingContext) => {
     // 1. positions
     // prettier-ignore
 
-    const positions = new Float32Array(repeat(3 * nTriangles)([0, 0, -20]));
+    const positions = new Float32Array(repeat(3 * nTriangles)([3., 0., 0.]));
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
@@ -146,8 +148,13 @@ const setup = (gl: WebGL2RenderingContext) => {
 };
 
 const draw = (gl: WebGL2RenderingContext) => {
-    const offsetLoc = gl.getUniformLocation(program, "camera_position");
-    gl.uniform3fv(offsetLoc, [state.cameraX, state.cameraY, state.cameraZ]);
+    state.someAngle += 0.01;
+
+    const cam_loc = gl.getUniformLocation(program, "camera_position");
+    gl.uniform3fv(cam_loc, [state.cameraX, state.cameraY, state.cameraZ]);
+
+    const angle_loc = gl.getUniformLocation(program, "some_angle");
+    gl.uniform1f(angle_loc, state.someAngle);
 
     // Fill background with one colour
     gl.clear(gl.COLOR_BUFFER_BIT);
