@@ -50,29 +50,44 @@ type Cube = {
     color: [number, number, number];
 };
 
+const charToColor = (char: string) => {
+    const charMap: Record<string, [number, number, number]> = {
+        R: [1, 0, 0],
+        G: [0, 1, 0],
+        B: [0, 0, 1],
+        Y: [1, 1, 0],
+        "1": [1, 1, 1],
+        "0": [0, 0, 0],
+    };
+    return charMap[char];
+};
+
 const strToCubes = (str: string) => {
     const cubes: Cube[] = [];
     str.split("\n").forEach((line, y) =>
         line.split("").forEach((char, x) => {
-            switch (char) {
-                case "R":
-                    cubes.push({
-                        position: [-x * 2, y * 2, 0],
-                        color: [1, 0, 0],
-                    });
-                    break;
-                case "G":
-                    cubes.push({
-                        position: [-x * 2, y * 2, 0],
-                        color: [0, 1, 0],
-                    });
-                    break;
-                case "B":
-                    cubes.push({
-                        position: [-x * 2, y * 2, 0],
-                        color: [0, 0, 1],
-                    });
-                    break;
+            let color = charToColor(char);
+            if (color) {
+                cubes.push({
+                    position: [-x * 2, y * 2, 0],
+                    color,
+                });
+                cubes.push({
+                    position: [-x * 2, y * 2, 4],
+                    color,
+                });
+                cubes.push({
+                    position: [-x * 2, y * 2, 8],
+                    color,
+                });
+                cubes.push({
+                    position: [-x * 2, y * 2, 12],
+                    color,
+                });
+                cubes.push({
+                    position: [-x * 2, y * 2, 16],
+                    color,
+                });
             }
         })
     );
@@ -95,9 +110,40 @@ const strToCubes = (str: string) => {
 // ];
 
 const cubes = strToCubes(`
-RRR GGG BBBBB
- R  G G B B B
- R  GGG B B B
+101010101010101010101010101010101010101010101010101010101010
+0                  10                  10                  1
+1                  01                  01                  0
+0  RRR GGG BBBBB   10  RRR GGG BBBBB   10  RRR GGG BBBBB   1
+1   R  G G B B B   01   R  G G B B B   01   R  G G B B B   0
+0   R  GGG B B B   10   R  GGG B B B   10   R  GGG B B B   1
+1                  01                  01                  0
+0                  10                  10                  1
+101010101010101010101010101010101010101010101010101010101010
+101010101010101010101010101010101010101010101010101010101010
+0                  10                  10                  1
+1                  01                  01                  0
+0  RRR GGG BBBBB   10  RRR GGG BBBBB   10  RRR GGG BBBBB   1
+1   R  G G B B B   01   R  G G B B B   01   R  G G B B B   0
+0   R  GGG B B B   10   R  GGG B B B   10   R  GGG B B B   1
+1                  01                  01                  0
+0                  10                  10                  1
+101010101010101010101010101010101010101010101010101010101010
+101010101010101010101010101010101010101010101010101010101010
+0                  10                  10                  1
+1                  01                  01                  0
+0  RRR GGG BBBBB   10  RRR GGG BBBBB   10  RRR GGG BBBBB   1
+1   R  G G B B B   01   R  G G B B B   01   R  G G B B B   0
+0   R  GGG B B B   10   R  GGG B B B   10   R  GGG B B B   1
+1                  01                  01                  0
+0                  10                  10                  1
+101010101010101010101010101010101010101010101010101010101010
+
+
+
+
+
+
+
 `);
 
 console.log(cubes);
@@ -195,7 +241,7 @@ const draw = (gl: WebGL2RenderingContext) => {
 const init = () => {
     const gl = createGLContext();
     setup(gl);
-    setInterval(() => draw(gl), 33);
+    setInterval(() => draw(gl), 16);
     initControls(state);
 };
 
