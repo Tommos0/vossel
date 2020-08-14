@@ -1,5 +1,20 @@
 import vertexShaderSource from "./shaders/vertex.glsl";
 import fragmentShaderSource from "./shaders/fragment.glsl";
+import { initControls } from "./controls";
+
+const state = {
+    cameraX: 0,
+    cameraY: 0,
+    cameraZ: 0,
+    cameraPhi: 0, // angle with z axis around y axis (0: in z-direction, pi: -z direction)
+    cameraTheta: 0, // angle with x,y plane
+    movementSpeed: 0.04,
+};
+export type State = typeof state;
+//
+// setInterval(() => {
+//     console.log(state);
+// }, 1000);
 
 const repeat = (n: number) => (x: any[]) => {
     let result: any[] = [];
@@ -30,6 +45,8 @@ const createGLContext = () => {
 
 const nTriangles = 12;
 
+let program: WebGLProgram;
+
 const setup = (gl: WebGL2RenderingContext) => {
     // Set background to solid grey
     gl.clearColor(0.25, 0.25, 0.25, 1);
@@ -50,7 +67,7 @@ const setup = (gl: WebGL2RenderingContext) => {
     }
 
     // Link shaders to WebGL program
-    const program = gl.createProgram()!;
+    program = gl.createProgram()!;
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
@@ -129,6 +146,9 @@ const setup = (gl: WebGL2RenderingContext) => {
 };
 
 const draw = (gl: WebGL2RenderingContext) => {
+    const offsetLoc = gl.getUniformLocation(program, "camera_position");
+    gl.uniform3fv(offsetLoc, [state.cameraX, state.cameraY, state.cameraZ]);
+
     // Fill background with one colour
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -139,7 +159,8 @@ const draw = (gl: WebGL2RenderingContext) => {
 const init = () => {
     const gl = createGLContext();
     setup(gl);
-    draw(gl);
+    setInterval(() => draw(gl), 33);
+    initControls(state);
 };
 
 window.addEventListener("DOMContentLoaded", init);

@@ -6,6 +6,8 @@ layout (location=2) in vec3 color;
 
 out vec3 vColor;
 
+uniform vec3 camera_position;
+
 vec3 vertex_offsets[36] = vec3[36](
     //front
     vec3(-1.,  1.,  1.),
@@ -83,10 +85,23 @@ float[6] depth = float[6](
 void main() {
     vec3 position = vertex_offsets[uint(index)];
     gl_Position = vec4(
-        position[0] + .5 * position[2],  // x
-        position[1] + .5 * position[2],  // y
-        -position[2],                    // z
+        camera_position + vec3(
+            position[0] + .5 * position[2],  // x
+            position[1] + .5 * position[2],  // y
+            -position[2]                    // z
+        ),
         2.                               // w
     );
     vColor = colorScale[uint(index/6.)] * vec3(color[0], color[1], color[2]);
 }
+
+/*
+   y
+   |
+   |    z
+   |   /
+   |  /
+   | /
+   |/_______x
+
+*/
