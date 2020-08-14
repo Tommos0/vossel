@@ -19,7 +19,6 @@ export const initControls = (state: State) => {
 
     const keyDownHandler = (e: KeyboardEvent) => {
         if (Object.values(KEYS).includes(e.key as KEYS)) {
-            clearKeyState();
             keyState[e.key as KEYS] = true;
         }
     };

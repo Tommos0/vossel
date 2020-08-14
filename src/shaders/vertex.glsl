@@ -90,7 +90,7 @@ void main() {
             position[1] + .5 * position[2],  // y
             -position[2]                    // z
         ),
-        2.                               // w
+        2. + camera_position[2]                               // w
     );
     vColor = colorScale[uint(index/6.)] * vec3(color[0], color[1], color[2]);
 }
