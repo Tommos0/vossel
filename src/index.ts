@@ -45,7 +45,62 @@ const createGLContext = () => {
     return gl;
 };
 
-const nTriangles = 12;
+type Cube = {
+    position: [number, number, number];
+    color: [number, number, number];
+};
+
+const strToCubes = (str: string) => {
+    const cubes: Cube[] = [];
+    str.split("\n").forEach((line, y) =>
+        line.split("").forEach((char, x) => {
+            switch (char) {
+                case "R":
+                    cubes.push({
+                        position: [-x * 2, y * 2, 0],
+                        color: [1, 0, 0],
+                    });
+                    break;
+                case "G":
+                    cubes.push({
+                        position: [-x * 2, y * 2, 0],
+                        color: [0, 1, 0],
+                    });
+                    break;
+                case "B":
+                    cubes.push({
+                        position: [-x * 2, y * 2, 0],
+                        color: [0, 0, 1],
+                    });
+                    break;
+            }
+        })
+    );
+
+    return cubes;
+};
+// const cubes: Array<Cube> = [
+//     {
+//         position: [0, 0, 0],
+//         color: [1, 0, 0],
+//     },
+//     {
+//         position: [2, 0, 0],
+//         color: [0, 0, 1],
+//     },
+//     {
+//         position: [4, 0, 0],
+//         color: [0, 1, 0],
+//     },
+// ];
+
+const cubes = strToCubes(`
+RRR GGG BBBBB
+ R  G G B B B
+ R  GGG B B B
+`);
+
+console.log(cubes);
 
 let program: WebGLProgram;
 
@@ -83,9 +138,12 @@ const setup = (gl: WebGL2RenderingContext) => {
     // Setup Geometry
     // Create a Vertex Buffer Object (VBO) and bind two buffers to it
     // 1. positions
-    // prettier-ignore
 
-    const positions = new Float32Array(repeat(3 * nTriangles)([3., 0., 0.]));
+    const positions = new Float32Array(
+        ([] as number[]).concat(
+            ...cubes.map((cube) => repeat(36)(cube.position))
+        )
+    );
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
@@ -94,7 +152,7 @@ const setup = (gl: WebGL2RenderingContext) => {
 
     // 3. indices
     // prettier-ignore
-    const indices = new Float32Array(range(3 * nTriangles));
+    const indices = new Float32Array(repeat(cubes.length)(range(36)));
     const indexBuffer = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, indices, gl.STATIC_DRAW);
@@ -103,38 +161,9 @@ const setup = (gl: WebGL2RenderingContext) => {
 
     // 2. colours
     // prettier-ignore
-    const colorData = [
-        ...repeat(36)(
-            repeat(3)([
-                1.0, 0.0, 0.0,
-            ])
-        ),
-        // ...repeat(2)(
-        //     repeat(3)([
-        //         0.0, 1.0, 0.0,
-        //     ])
-        // ),
-        // ...repeat(2)(
-        //     repeat(3)([
-        //         0.0, 0.0, 1.0,
-        //     ])
-        // ),
-        // ...repeat(2)(
-        //     repeat(3)([
-        //         1.0, 1.0, 0.0,
-        //     ])
-        // ),
-        // ...repeat(2)(
-        //     repeat(3)([
-        //         0.0, 1.0, 1.0,
-        //     ])
-        // ),
-        // ...repeat(2)(
-        //     repeat(3)([
-        //         1.0, 0.0, 1.0,
-        //     ])
-        // )
-    ];
+    const colorData = ([] as number[]).concat(
+        ...cubes.map((cube) => repeat(36)(cube.color))
+    )
     console.log(colorData);
     const colors = new Float32Array(colorData);
     const colorBuffer = gl.createBuffer();
@@ -160,7 +189,7 @@ const draw = (gl: WebGL2RenderingContext) => {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Instruct WebGL to draw triangles with a set of 3 vertices
-    gl.drawArrays(gl.TRIANGLES, 0, nTriangles * 3);
+    gl.drawArrays(gl.TRIANGLES, 0, cubes.length * 36);
 };
 
 const init = () => {
