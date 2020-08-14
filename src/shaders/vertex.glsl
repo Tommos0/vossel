@@ -95,14 +95,21 @@ void main() {
 
     vec4 world_position = positioner * local_position;
 
-    mat4 camera_matrix = mat4(
-        cos(some_angle),     -sin(some_angle),             0.,             0.,
-        sin(some_angle),      cos(some_angle),             0.,             0.,
-        .5,             .5,             -1.,             0.,
-        camera_position[0], camera_position[1], camera_position[2],    camera_position[2]
+    mat4 camera_translation_matrix = mat4(
+        1.,                 0.,                 0.,                 0.,
+        0.,                 1.,                 0.,                 0.,
+        .5,                 .5,                 -1.,                0.,
+        camera_position[0], camera_position[1], camera_position[2], camera_position[2]
     );
 
-    gl_Position = camera_matrix * world_position;
+    mat4 camera_rotation_matrix = mat4(
+        cos(some_angle),    -sin(some_angle),   0.,     0.,
+        sin(some_angle),    cos(some_angle),    0.,     0.,
+        0,                  0,                  1.,     0.,
+        0.,                 0.,                 0.,     1.
+    );
+
+    gl_Position = camera_rotation_matrix * camera_translation_matrix * world_position;
 
 //    gl_Position = vec4(
 //        camera_position + vec3(
